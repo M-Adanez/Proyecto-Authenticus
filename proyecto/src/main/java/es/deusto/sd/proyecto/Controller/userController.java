@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -70,7 +73,7 @@ public class userController {
         summary = "Registrarse",
         description = "Crea usuario para logins"
     )
-    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "201", description = "Creado")
     @ApiResponse(responseCode = "400", description = "Faltan Datos")
     @ApiResponse(responseCode = "409", description = "Usuario ya registrado")
 
@@ -89,8 +92,8 @@ public class userController {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya esta registrado
 
 
-            case 200:
-                return new ResponseEntity<>(HttpStatus.OK);//200 bien
+            case 201:
+                return new ResponseEntity<>(HttpStatus.CREATED);//200 bien
         
             default:
                 break;
@@ -100,7 +103,28 @@ public class userController {
         }
 
 
-    //LOGOUT
+    @RequestMapping("/logout")
+    @Operation(
+        summary = "Cerrar Sesion",
+        description = "Cierra la Sesión del Usuario"
+    )
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "No hay sesion iniciada")
 
+    @GetMapping
+    public ResponseEntity<String> logout(){
+        int la=userService.logout();
+        
+        switch (la) {
+            case 200:
+                return new ResponseEntity<>(HttpStatus.OK); //200
 
+            case 400:
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400
+
+            default:
+                break;
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400
+    }
 }
