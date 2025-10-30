@@ -1,5 +1,7 @@
 package es.deusto.sd.proyecto.Controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,39 +40,63 @@ public class userController {
     @ApiResponse(responseCode = "401", description = "Contraseña Erronea")
     
     @PostMapping
-    public ResponseEntity<String> getToken(
+    public ResponseEntity<String> login(
         @Parameter(description="Username and password",required = true)
         @RequestBody userDTO userDTO) {
-        
-        //CAMBIAR CONDICIONES
-        
-        if(true){ //USUARIO NO ENCONTRADO
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404
-        }else if(true){ //CONTRASEÑA INCORRECTA
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401
-            }
 
-        String token=userService.generateToken(userDTO);
-        return new ResponseEntity<>(token, HttpStatus.OK);//200
+        int reg=userService.loginUser(userDTO);
+        switch (reg) {
+            case 401:
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401 contraseña mal
+            
+            case 404:
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);//409 no existe
+
+            case 200:
+                UUID tok=userService.generateToken();
+                return new ResponseEntity<>(tok.toString(),HttpStatus.OK);//200 bien
+
+            default:
+                break;
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
     }
 
     //REGISTER
 
     @RequestMapping("/register")
     @Operation(
-        summary = "Register in the App",
-        description = "Creates a User for future Logins"
+        summary = "Registrarse",
+        description = "Crea usuario para logins"
     )
     @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Faltan Datos")
+    @ApiResponse(responseCode = "409", description = "Usuario ya registrado")
+
 
     @PostMapping
     public ResponseEntity<String> register(
-        @Parameter(description="Username and password",required = true)
+        @Parameter(description="Username y Password",required = true)
         @RequestBody userDTO userDTO) {
 
-        userService.registerUser(userDTO);
+        int reg=userService.registerUser(userDTO);
+        switch (reg) {
+            case 400:
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400 falta informacion
             
-        return new ResponseEntity<>(HttpStatus.OK);//200
+            case 409:
+                return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya esta registrado
+
+
+            case 200:
+                return new ResponseEntity<>(HttpStatus.OK);//200 bien
+        
+            default:
+                break;
+        }
+            
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//200
         }
 
 
