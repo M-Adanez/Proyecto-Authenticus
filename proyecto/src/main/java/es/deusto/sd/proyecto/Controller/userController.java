@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
+import es.deusto.sd.proyecto.Service.stateManagement;
 import es.deusto.sd.proyecto.Service.userService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,7 +54,10 @@ public class userController {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401 contraseña mal
             
             case 404:
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);//409 no existe
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404 no existe
+
+            case 409:
+                return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya logeado
 
             case 200:
                 UUID tok=userService.generateToken();
@@ -90,7 +94,6 @@ public class userController {
             
             case 409:
                 return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya esta registrado
-
 
             case 201:
                 return new ResponseEntity<>(HttpStatus.CREATED);//200 bien

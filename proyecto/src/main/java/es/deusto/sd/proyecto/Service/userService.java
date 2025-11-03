@@ -15,9 +15,6 @@ import java.util.UUID;
 
 @Service
 public class userService {
-    public User current_user;
-    private final ArrayList<User> users=new ArrayList<>();
-    private final Map<UUID,User> user_token= new HashMap<>();
 
     public userService() {
     }
@@ -35,21 +32,24 @@ public class userService {
             }
         }
 
-        if (users.contains(user)){
+        if (stateManagement.users.contains(user)){
             return 409;
         }
-        users.add(user);
+        stateManagement.users.add(user);
         return 201;
     }
     
     public int loginUser(userDTO userDTO){
+        if (stateManagement.current_user!=null){
+            return 409;//YA LOGEADO
+        }
         User user=new User(userDTO.getUsername(), userDTO.getPassword());
-        if (users.contains(user)){
-            current_user=user;
+        if (stateManagement.users.contains(user)){
+            stateManagement.current_user=user;
             return 200;
         }
         ArrayList<String> usernames=new ArrayList<>();
-        for (User us:users){
+        for (User us:stateManagement.users){
             usernames.add(us.getUsername());
         }
         if(usernames.contains(user.getUsername())){
@@ -60,10 +60,12 @@ public class userService {
     }
 
     public int logout(){
-        if (current_user==null){
-            return 400;
+        if (stateManagement.current_user==null){
+            return 400; //NO LOGEADO
         }else{
+            stateManagement.current_user=null;
             return 200;
+
         }
     }
 }
