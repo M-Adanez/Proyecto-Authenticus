@@ -7,28 +7,25 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.Date;
 
 @Service
 public class CaseInvestigationService{
-
-    static int id = 0;
-
-    private List<CaseInvestigation> caseInvestigations = new ArrayList<>();
+    private stateManagement instance;
 
     public CaseInvestigationService() {
+        this.instance = stateManagement.getInstance();
     }
 
-    public void createCaseInvestigation(CaseInvestigation ci){
-        caseInvestigations.add(ci);
+    public void createCaseInvestigation(UUID token, CaseInvestigation ci){
+        instance.addCaseInvestigation(token, ci);
     }
 
     // return 5 last caseInvestigations
-    public List<CaseInvestigation> getCaseInvestigations(){
+    public List<CaseInvestigation> getCaseInvestigations(UUID token){
+        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);
+
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
         int N = 5;
 
@@ -41,7 +38,9 @@ public class CaseInvestigationService{
     }
 
     // return N last caseInvestigations
-    public List<CaseInvestigation> getCaseInvestigationsN(int N){
+    public List<CaseInvestigation> getCaseInvestigationsN(UUID token,int N){
+        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
+
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
 
         int idxLastCase = caseInvestigations.size()-1;
@@ -53,7 +52,9 @@ public class CaseInvestigationService{
     }
     
     // return caseInvestigations between startDate and endDate
-    public List<CaseInvestigation> getCaseInvestigationsInDate(Date startDate, Date endDate){
+    public List<CaseInvestigation> getCaseInvestigationsInDate(UUID token, Date startDate, Date endDate){
+        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);
+
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
 
         for(CaseInvestigation caseInv : caseInvestigations){
@@ -63,7 +64,9 @@ public class CaseInvestigationService{
         return caseInvestigationsList;
     }
 
-    public void deleteCaseInvestigation(int ID){
+    public void deleteCaseInvestigation(UUID token, int ID){
+        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
+
         for(int i = 0; i<caseInvestigations.size(); i++){
             if(caseInvestigations.get(i).getID() == ID){
                 caseInvestigations.remove(i);
@@ -72,7 +75,9 @@ public class CaseInvestigationService{
         }
     }
 
-    public void addFilesToCase(List<String> filesURL, int ID){
+    public void addFilesToCase(UUID token, List<String> filesURL, int ID){
+        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
+
         caseInvestigations.get(ID).setImageList(filesURL);
     }
 }
