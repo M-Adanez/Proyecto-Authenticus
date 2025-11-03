@@ -9,15 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
-import es.deusto.sd.proyecto.Service.stateManagement;
 import es.deusto.sd.proyecto.Service.userService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -34,7 +32,6 @@ public class userController {
 
 
     //LOGIN
-    @RequestMapping("/login")
     @Operation(
         summary = "Login to the App",
         description = "Returns a Token to use the app"
@@ -43,10 +40,13 @@ public class userController {
     @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     @ApiResponse(responseCode = "401", description = "Contraseña Erronea")
     
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<String> login(
         @Parameter(description="Username and password",required = true)
         @RequestBody userDTO userDTO) {
+        if (userDTO == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Bad Request
+        }
 
         int reg=userService.loginUser(userDTO);
         switch (reg) {
@@ -72,7 +72,6 @@ public class userController {
 
     //REGISTER
 
-    @RequestMapping("/register")
     @Operation(
         summary = "Registrarse",
         description = "Crea usuario para logins"
@@ -82,11 +81,9 @@ public class userController {
     @ApiResponse(responseCode = "409", description = "Usuario ya registrado")
 
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<String> register(
-        @Parameter(description="Username y Password",required = true)
-        @RequestBody userDTO userDTO) {
-
+        @RequestBody userDTO userDTO) {//TODS LOS CAMPOS SON NULL ENTONCES DA ERROR PERO SOLO AL USAR EL BODY, NO PARAMS
         int reg=userService.registerUser(userDTO);
         switch (reg) {
             case 400:
@@ -106,7 +103,6 @@ public class userController {
         }
 
 
-    @RequestMapping("/logout")
     @Operation(
         summary = "Cerrar Sesion",
         description = "Cierra la Sesión del Usuario"
@@ -114,7 +110,7 @@ public class userController {
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "No hay sesion iniciada")
 
-    @GetMapping
+    @GetMapping("/logout")
     public ResponseEntity<String> logout(){
         int la=userService.logout();
         

@@ -26,12 +26,13 @@ public class userService {
 
     public int registerUser(userDTO userDTO){
         User user= new User(userDTO);
-        if(user.getUsername()==null || user.getPassword()==null){
-            if(user.getUsername()=="" || user.getPassword()==""){
-                return 400;
-            }
+        if (user.getUsername() == null || user.getUsername().isEmpty() ||
+            user.getPassword() == null || user.getPassword().isEmpty() ||
+            user.getNombre() == null || user.getNombre().isEmpty() ||
+            user.getTlf() == null || user.getTlf().isEmpty()) {
+            return 400; // Bad Request
         }
-
+        
         if (stateManagement.users.contains(user)){
             return 409;
         }
@@ -43,11 +44,13 @@ public class userService {
         if (stateManagement.current_user!=null){
             return 409;//YA LOGEADO
         }
-        User user=new User(userDTO.getUsername(), userDTO.getPassword());
+
+        User user=new User(userDTO);
         if (stateManagement.users.contains(user)){
             stateManagement.current_user=user;
             return 200;
         }
+
         ArrayList<String> usernames=new ArrayList<>();
         for (User us:stateManagement.users){
             usernames.add(us.getUsername());
