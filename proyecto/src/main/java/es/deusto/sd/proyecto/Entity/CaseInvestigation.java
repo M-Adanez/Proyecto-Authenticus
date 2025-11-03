@@ -12,8 +12,9 @@ public class CaseInvestigation{
         CONTENT_ALETARION, CONTENT_VERACITY, BOTH;
     }
 
-    private static int ID = 0;
+    private static int ID_cont = 0;
 
+    private int ID;
     private String name;
     private AnalysisType type;
     private Date date;
@@ -21,7 +22,7 @@ public class CaseInvestigation{
 
     // void constructor
     public CaseInvestigation(){
-        ID++;
+        this.ID = ID_cont++;
     }
 
     // constructor with all args
@@ -30,7 +31,7 @@ public class CaseInvestigation{
         this.type = type;
         this.date = date;
         this.imageList = imageList;
-        ID++;
+        this.ID = ID_cont++;
     }
 
     // constructor without imageList 
@@ -39,16 +40,16 @@ public class CaseInvestigation{
         this.date = date;
         this.type = type;
         this.imageList = new ArrayList<>(); 
-        ID++;
+        this.ID = ID_cont++;
     }
 
     // getters and setters
-    public static int getID() {
-        return ID;
+    public int getID() {
+        return this.ID;
     }
 
-    public static void setID(int id) {
-        ID = id;
+    public void setID(int id) {
+        this.ID = id;
     }
 
     public String getName() {
