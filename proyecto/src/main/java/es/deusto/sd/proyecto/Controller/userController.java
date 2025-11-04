@@ -48,18 +48,20 @@ public class userController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Bad Request
         }
 
-        int reg=userService.loginUser(userDTO);
+        String reg=userService.loginUser(userDTO);
         switch (reg) {
-            case 401:
+            case "faltan datos":
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); //400 faltan datos
+            case "contraseña mal":
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401 contraseña mal
             
-            case 404:
+            case "no existe":
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404 no existe
 
-            case 409:
+            case "ya logeado":
                 return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya logeado
 
-            case 200:
+            case "bien":
                 UUID tok=userService.generateToken();
                 return new ResponseEntity<>(tok.toString(),HttpStatus.OK);//200 bien
 
@@ -84,15 +86,15 @@ public class userController {
     @PostMapping("/register")
     public ResponseEntity<String> register(
         @RequestBody userDTO userDTO) {//TODS LOS CAMPOS SON NULL ENTONCES DA ERROR PERO SOLO AL USAR EL BODY, NO PARAMS
-        int reg=userService.registerUser(userDTO);
+        String reg=userService.registerUser(userDTO);
         switch (reg) {
-            case 400:
+            case "faltan datos":
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400 falta informacion
             
-            case 409:
+            case "ya registrado":
                 return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya esta registrado
 
-            case 201:
+            case "creado":
                 return new ResponseEntity<>(HttpStatus.CREATED);//200 bien
         
             default:
@@ -112,13 +114,13 @@ public class userController {
 
     @GetMapping("/logout")
     public ResponseEntity<String> logout(){
-        int la=userService.logout();
+        String la=userService.logout();
         
         switch (la) {
-            case 200:
+            case "bien":
                 return new ResponseEntity<>(HttpStatus.OK); //200
 
-            case 400:
+            case "mal":
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400
 
             default:

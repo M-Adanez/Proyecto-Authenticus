@@ -24,31 +24,31 @@ public class userService {
         return uuid;
     }
 
-    public int registerUser(userDTO userDTO){
+    public String registerUser(userDTO userDTO){
         User user= new User(userDTO);
         if (user.getUsername() == null || user.getUsername().isEmpty() ||
             user.getPassword() == null || user.getPassword().isEmpty() ||
             user.getNombre() == null || user.getNombre().isEmpty() ||
             user.getTlf() == null || user.getTlf().isEmpty()) {
-            return 400; // Bad Request
+            return "faltan datos"; // Bad Request
         }
         
         if (stateManagement.users.contains(user)){
-            return 409;
+            return "ya registrado";
         }
         stateManagement.users.add(user);
-        return 201;
+        return "creado";
     }
     
-    public int loginUser(userDTO userDTO){
+    public String loginUser(userDTO userDTO){
         if (stateManagement.current_user!=null){
-            return 409;//YA LOGEADO
+            return "ya logeado";//YA LOGEADO
         }
 
         User user=new User(userDTO);
         if (stateManagement.users.contains(user)){
             stateManagement.current_user=user;
-            return 200;
+            return "bien";
         }
 
         ArrayList<String> usernames=new ArrayList<>();
@@ -56,18 +56,18 @@ public class userService {
             usernames.add(us.getUsername());
         }
         if(usernames.contains(user.getUsername())){
-            return 401;
+            return "contraseña mal";
         }
 
-        return 404;
+        return "faltan datos";
     }
 
-    public int logout(){
+    public String logout(){
         if (stateManagement.current_user==null){
-            return 400; //NO LOGEADO
+            return "mal"; //NO LOGEADO
         }else{
             stateManagement.current_user=null;
-            return 200;
+            return "bien";
 
         }
     }
