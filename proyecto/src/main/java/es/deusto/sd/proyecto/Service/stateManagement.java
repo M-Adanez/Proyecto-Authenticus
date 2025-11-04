@@ -37,6 +37,15 @@ public class stateManagement {
         users.add(user);
     }
 
+    public Map<UUID, User> getLoggedUssers(){
+        return this.user_token;
+    }
+
+    public List<User> getUsers(){
+        return this.users;
+    }
+
+
     public synchronized void addLogin(UUID token, User user){
         user_token.put(token, user);
     }

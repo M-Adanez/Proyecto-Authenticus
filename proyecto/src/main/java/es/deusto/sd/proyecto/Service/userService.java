@@ -16,7 +16,9 @@ import java.util.UUID;
 @Service
 public class userService {
 
+    private stateManagement instance;
     public userService() {
+        instance = stateManagement.getInstance();
     }
 
     public UUID generateToken(){
@@ -33,15 +35,15 @@ public class userService {
             return "faltan datos"; // Bad Request
         }
         
-        if (stateManagement.users.contains(user)){
+        if (instance.getUsers().contains(user)){
             return "ya registrado";
         }
-        stateManagement.users.add(user);
+        instance.addUser(user);
         return "creado";
     }
     
     public String loginUser(userDTO userDTO){
-        if (stateManagement.current_user!=null){
+        if (instance.getLoggedUssers().values()!=null){
             return "ya logeado";//YA LOGEADO
         }
 
