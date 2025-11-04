@@ -15,7 +15,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 
@@ -112,9 +115,11 @@ public class userController {
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "No hay sesion iniciada")
 
-    @GetMapping("/logout")
-    public ResponseEntity<String> logout(){
-        String la=userService.logout();
+    @DeleteMapping("/logout/{token}")
+    public ResponseEntity<String> logout(
+        @Parameter(description = "ID of the dish to delete", required = true, example = "1")
+        @PathVariable("token") Long token){
+        String la=userService.logout(token);
         
         switch (la) {
             case "bien":

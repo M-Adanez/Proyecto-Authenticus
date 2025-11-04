@@ -48,13 +48,13 @@ public class userService {
         }
 
         User user=new User(userDTO);
-        if (stateManagement.users.contains(user)){
+        if (instance.getUsers().contains(user)){
             stateManagement.current_user=user;
             return "bien";
         }
 
         ArrayList<String> usernames=new ArrayList<>();
-        for (User us:stateManagement.users){
+        for (User us:instance.getUsers()){
             usernames.add(us.getUsername());
         }
         if(usernames.contains(user.getUsername())){
@@ -64,13 +64,11 @@ public class userService {
         return "faltan datos";
     }
 
-    public String logout(){
-        if (stateManagement.current_user==null){
-            return "mal"; //NO LOGEADO
-        }else{
-            stateManagement.current_user=null;
+    public String logout(String token){
+        if (this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
             return "bien";
-
+        }else{
+            return "mal";
         }
     }
 }
