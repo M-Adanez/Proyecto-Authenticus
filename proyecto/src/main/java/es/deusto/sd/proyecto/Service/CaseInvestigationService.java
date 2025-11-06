@@ -1,7 +1,7 @@
 package es.deusto.sd.proyecto.Service;
 
 import es.deusto.sd.proyecto.Entity.CaseInvestigation;
-
+import es.deusto.sd.proyecto.DTO.CaseInvestigationDTO;
 
 import org.springframework.stereotype.Service;
 
@@ -18,8 +18,8 @@ public class CaseInvestigationService{
         this.instance = stateManagement.getInstance();
     }
 
-    public void createCaseInvestigation(UUID token, CaseInvestigation ci){
-        instance.addCaseInvestigation(token, ci);
+    public void createCaseInvestigation(UUID token, CaseInvestigationDTO ciDTO){
+        instance.addCaseInvestigation(token, DTO_to_CI(ciDTO));
     }
 
     // return 5 last caseInvestigations
@@ -80,4 +80,16 @@ public class CaseInvestigationService{
 
         caseInvestigations.get(ID).setImageList(filesURL);
     }
+
+    // DTO parsers
+
+    public CaseInvestigation DTO_to_CI(CaseInvestigationDTO dto){
+        CaseInvestigation ci = new CaseInvestigation(dto.getName(), dto.getType(), dto.getDate(), dto.getImageList());
+        return ci;
+    }
+
+    public CaseInvestigationDTO CI_to_DTO(CaseInvestigation ci){
+        CaseInvestigationDTO dto = new CaseInvestigationDTO(ci.getName(), ci.getType(), ci.getDate(), ci.getImageList());
+        return dto;
+    } 
 }
