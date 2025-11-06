@@ -1,5 +1,7 @@
 package es.deusto.sd.proyecto.Entity;
 
+import es.deusto.sd.proyecto.Entity.AnalysisType;
+
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -7,10 +9,6 @@ import java.util.ArrayList;
 // fecha y lista de archivos de imagen (incluyendo la ruta al archivo).
 
 public class CaseInvestigation{
-
-    private enum AnalysisType{
-        CONTENT_ALETARION, CONTENT_VERACITY, BOTH;
-    }
 
     private static int ID_cont = 0;
 
