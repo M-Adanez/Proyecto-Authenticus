@@ -74,4 +74,8 @@ public class stateManagement {
         user_token.remove(token);
     }
 
+    public synchronized void delete_user(UUID token){
+        users.remove(user_token.get(token));
+    }
+
 }

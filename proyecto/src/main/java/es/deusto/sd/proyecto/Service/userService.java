@@ -70,4 +70,14 @@ public class userService {
             return "mal";
         }
     }
+
+    public String remove(String token){
+        if(this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
+            instance.delete_user(UUID.fromString(token));
+            logout(token);
+            return "bien";
+        }else{
+            return "no existe";
+        }
+    }
 }

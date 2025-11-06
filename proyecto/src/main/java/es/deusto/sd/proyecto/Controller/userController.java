@@ -44,6 +44,7 @@ public class userController {
     
     @PostMapping("/login")
     public ResponseEntity<String> login(
+        //CUANDO HACES LOGIN LUEGO REMOVE LUEGO REGISTER YA NO PUEDES HACER LOGIN OTRA VEZ "CON EL MISMO USUARIO"
         @Parameter(description="Username and password",required = true)
         @RequestBody userDTO userDTO) {
         if (userDTO == null) {
@@ -121,6 +122,33 @@ public class userController {
 
             case "mal":
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400
+
+            default:
+                break;
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400
+    }
+
+    @Operation(
+        summary = "Eliminar Usuario",
+        description = "Elimina un Usuario del Sistema"
+    )
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "No hay sesion iniciada")
+    @ApiResponse(responseCode = "404", description = "No se ha encontrado usuario")
+
+     @DeleteMapping("/remove/{token}")
+    public ResponseEntity<String> remove(
+        @Parameter(description = "User Token", required = true)
+        @PathVariable("token") String token){
+        String la=userService.remove(token);
+        
+        switch (la) {
+            case "bien":
+                return new ResponseEntity<>(HttpStatus.OK); //200
+
+            case "no existe":
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404
 
             default:
                 break;
