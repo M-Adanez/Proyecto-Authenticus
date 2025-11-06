@@ -66,10 +66,8 @@ public class User {
         if (obj == null || getClass() != obj.getClass()) return false;
         User other = (User) obj;
         return java.util.Objects.equals(username, other.username) &&
-               java.util.Objects.equals(password, other.password) &&
-               java.util.Objects.equals(nombre, other.nombre) &&
-               java.util.Objects.equals(tlf, other.tlf);
-    }
+               java.util.Objects.equals(password, other.password);
+            }
 
     @Override
     public int hashCode() {

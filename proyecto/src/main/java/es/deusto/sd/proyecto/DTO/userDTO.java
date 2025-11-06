@@ -18,6 +18,11 @@ public class userDTO {
     public userDTO() {
     }
 
+    public userDTO(String username, String password){
+        this.username=username;
+        this.password=password;
+    }
+
     public userDTO(String username, String password, String nombre, String tlf) {
         this.username = username;
         this.password = password;

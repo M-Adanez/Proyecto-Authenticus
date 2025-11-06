@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
@@ -62,17 +61,12 @@ public class userController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404 no existe
 
             case "ya logeado":
-                return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya logeado
-
-            case "bien":
-                UUID tok=userService.generateToken();
-                return new ResponseEntity<>(tok.toString(),HttpStatus.OK);//200 bien
+                return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya logeado                
 
             default:
-                break;
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(reg,HttpStatus.OK);//200 bien
 
+        }
     }
 
     //REGISTER
@@ -117,7 +111,7 @@ public class userController {
 
     @DeleteMapping("/logout/{token}")
     public ResponseEntity<String> logout(
-        @Parameter(description = "ID of the dish to delete", required = true, example = "1")
+        @Parameter(description = "User Token", required = true)
         @PathVariable("token") String token){
         String la=userService.logout(token);
         

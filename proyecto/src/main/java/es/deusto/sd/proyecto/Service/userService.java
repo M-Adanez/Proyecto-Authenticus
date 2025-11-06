@@ -1,11 +1,7 @@
 package es.deusto.sd.proyecto.Service;
 
-import java.util.Map;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
@@ -43,13 +39,16 @@ public class userService {
     }
     
     public String loginUser(userDTO userDTO){
-        if (instance.getLoggedUssers().values()!=null){
-            return "ya logeado";//YA LOGEADO
+        if (instance.getLoggedUssers().values().contains(new User(userDTO))){
+            return "ya logeado"; //YA LOGEADO
         }
 
         User user=new User(userDTO);
+        UUID tok=generateToken();
+        instance.addLogin(tok,user);
+
         if (instance.getUsers().contains(user)){
-            return "bien";
+            return tok.toString();
         }
 
         ArrayList<String> usernames=new ArrayList<>();
@@ -65,6 +64,7 @@ public class userService {
 
     public String logout(String token){
         if (this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
+            instance.delete_token(UUID.fromString(token));
             return "bien";
         }else{
             return "mal";

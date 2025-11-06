@@ -65,10 +65,13 @@ public class stateManagement {
     }
 
 
-    private User getUserByToken(UUID token){
+    public User getUserByToken(UUID token){
         User us = user_token.get(token);
         return us;
     }
 
+    public synchronized void delete_token(UUID token){
+        user_token.remove(token);
+    }
 
 }
