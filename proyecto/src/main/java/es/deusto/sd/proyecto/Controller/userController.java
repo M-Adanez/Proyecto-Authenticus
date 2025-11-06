@@ -118,7 +118,7 @@ public class userController {
     @DeleteMapping("/logout/{token}")
     public ResponseEntity<String> logout(
         @Parameter(description = "ID of the dish to delete", required = true, example = "1")
-        @PathVariable("token") Long token){
+        @PathVariable("token") String token){
         String la=userService.logout(token);
         
         switch (la) {
