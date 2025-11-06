@@ -49,7 +49,6 @@ public class userService {
 
         User user=new User(userDTO);
         if (instance.getUsers().contains(user)){
-            stateManagement.current_user=user;
             return "bien";
         }
 
