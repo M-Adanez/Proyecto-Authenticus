@@ -35,6 +35,7 @@ public class stateManagement {
 
     public synchronized void addUser(User user){
         users.add(user);
+        users_case_investigations.put(user, new ArrayList<CaseInvestigation>());
     }
 
     public Map<UUID, User> getLoggedUssers(){

@@ -71,7 +71,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(username, password, nombre, tlf);
+        return java.util.Objects.hash(username, password);
     }
 
 }

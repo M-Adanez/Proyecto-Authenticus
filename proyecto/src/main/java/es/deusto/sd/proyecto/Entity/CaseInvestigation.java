@@ -23,6 +23,14 @@ public class CaseInvestigation{
         this.ID = ID_cont++;
     }
 
+    public CaseInvestigation(CaseInvestigation copy){
+        this.name = copy.getName();
+        this.ID = copy.getID();
+        this.date = copy.getDate();
+        this.type = copy.getType();
+        this.imageList = copy.getImageList();
+    }
+
     // constructor with all args
     public CaseInvestigation(String name, AnalysisType type, Date date, List<String> imageList) {
         this.name = name;
@@ -82,4 +90,17 @@ public class CaseInvestigation{
         this.imageList = imageList;
     }
     
+
+    @Override
+    public String toString() {
+        return "{" +
+            " ID='" + getID() + "'" +
+            ", name='" + getName() + "'" +
+            ", type='" + getType() + "'" +
+            ", date='" + getDate() + "'" +
+            ", imageList='" + getImageList() + "'" +
+            "}";
+    }
+
+
 }

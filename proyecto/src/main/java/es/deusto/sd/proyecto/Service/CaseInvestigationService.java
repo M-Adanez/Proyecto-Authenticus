@@ -1,14 +1,13 @@
 package es.deusto.sd.proyecto.Service;
 
 import es.deusto.sd.proyecto.Entity.CaseInvestigation;
+import es.deusto.sd.proyecto.Entity.CaseInvestigationResult;
 import es.deusto.sd.proyecto.DTO.CaseInvestigationDTO;
 
+import es.deusto.sd.proyecto.Entity.AnalysisType;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class CaseInvestigationService{
@@ -28,10 +27,9 @@ public class CaseInvestigationService{
 
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
         int N = 5;
-
-        int idxLastCase = caseInvestigations.size()-1;
-        for(int i = 0; i<N; i++){
-            caseInvestigationsList.add(caseInvestigations.get(idxLastCase - i));
+        
+        for(int i = 0; i<N && i<caseInvestigations.size(); i++){
+            caseInvestigationsList.add(caseInvestigations.reversed().get(i));
         }
 
         return caseInvestigationsList;
@@ -43,9 +41,8 @@ public class CaseInvestigationService{
 
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
 
-        int idxLastCase = caseInvestigations.size()-1;
-        for(int i = 0; i<N; i++){
-            caseInvestigationsList.add(caseInvestigations.get(idxLastCase - i));
+        for(int i = 0; i<N && i<caseInvestigationsList.size(); i++){
+            caseInvestigationsList.add(caseInvestigations.reversed().get(i));
         }
 
         return caseInvestigationsList;
@@ -79,6 +76,46 @@ public class CaseInvestigationService{
         List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
 
         caseInvestigations.get(ID).setImageList(filesURL);
+    }
+
+    public CaseInvestigationResult showCaseInvestigationResults(UUID token, int ID){
+        CaseInvestigation ci = null;
+        for(CaseInvestigation c : instance.getCaseInvestigations(token)){
+            if(c.getID() == ID) ci = c;
+            break;
+        }
+
+        int Nimages = ci.getImageList().size();
+        Map<AnalysisType,List<Float>> results = new HashMap<>();
+
+        List<AnalysisType> types = new ArrayList<>();
+
+        if(ci.getType().equals(AnalysisType.BOTH)){
+            types.add(AnalysisType.CONTENT_ALTERATION);
+            types.add(AnalysisType.CONTENT_VERACITY);
+        }else{
+            types.add(ci.getType());
+            if(ci.getType().equals(AnalysisType.CONTENT_ALTERATION)){
+                results.put(AnalysisType.CONTENT_VERACITY, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
+            }else{
+                results.put(AnalysisType.CONTENT_ALTERATION, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
+            }
+        }
+
+        for(AnalysisType type: types){
+            results.put(type, getRandomValues(Nimages));
+        }
+        
+        return new CaseInvestigationResult(ci, results);
+    }
+
+    private List<Float> getRandomValues(int N){
+        List<Float> values = new ArrayList<>();
+        Random ran = new Random();
+        for(int i = 0; i<N; i++){
+            values.add(ran.nextFloat());
+        }
+        return values;
     }
 
     // DTO parsers
