@@ -109,6 +109,15 @@ public class userController {
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "No hay sesion iniciada")
 
+    @DeleteMapping("/remove/{token}")
+    public ResponseEntity<String> remove(
+        @Parameter(description = "User Token", required = true)
+        @PathVariable("token") String token){
+            userService.remove(UUID.fromString(token));
+            return ResponseEntity.ok("Removed user's information");
+        
+    }
+
     @DeleteMapping("/logout/{token}")
     public ResponseEntity<String> logout(
         @Parameter(description = "User Token", required = true)

@@ -65,6 +65,12 @@ public class stateManagement {
         return users_case_investigations.get(us);
     }
 
+    public void remove(UUID token){
+        User us = getUserByToken(token);
+        users.remove(us);
+        user_token.remove(token);
+        users_case_investigations.remove(us);
+    }
 
     public User getUserByToken(UUID token){
         User us = user_token.get(token);

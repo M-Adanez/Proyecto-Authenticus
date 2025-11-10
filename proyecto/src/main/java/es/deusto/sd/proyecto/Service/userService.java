@@ -62,6 +62,10 @@ public class userService {
         return "faltan datos";
     }
 
+    public void remove(UUID token){
+        instance.remove(token);
+    }
+
     public String logout(String token){
         if (this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
             instance.delete_token(UUID.fromString(token));
