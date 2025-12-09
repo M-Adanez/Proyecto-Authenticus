@@ -1,29 +1,36 @@
 package es.deusto.sd.proyecto.Service;
 
 import es.deusto.sd.proyecto.Entity.CaseInvestigation;
-import es.deusto.sd.proyecto.Entity.CaseInvestigationResult;
+import es.deusto.sd.proyecto.DAO.caseInvestigationRepository;
 import es.deusto.sd.proyecto.DTO.CaseInvestigationDTO;
 
 import es.deusto.sd.proyecto.Entity.AnalysisType;
+
+import org.aspectj.internal.lang.annotation.ajcDeclareSoft;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class CaseInvestigationService{
-    private stateManagement instance;
 
-    public CaseInvestigationService() {
+    private final caseInvestigationRepository ciRepository;
+    private final stateManagement instance;
+
+    public CaseInvestigationService(caseInvestigationRepository ciRepository) {
+        this.ciRepository = ciRepository;
         this.instance = stateManagement.getInstance();
     }
 
     public void createCaseInvestigation(UUID token, CaseInvestigationDTO ciDTO){
-        instance.addCaseInvestigation(token, DTO_to_CI(ciDTO));
+        CaseInvestigation ci = DTO_to_CI(ciDTO);
+        ci.setUser(instance.getUserByToken(token));
+        ciRepository.save(ci);
     }
 
     // return 5 last caseInvestigations
     public List<CaseInvestigation> getCaseInvestigations(UUID token){
-        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);
+        List<CaseInvestigation> caseInvestigations = ciRepository.findAllByUser(instance.getUserByToken(token));
 
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
         int N = 5;
@@ -37,7 +44,7 @@ public class CaseInvestigationService{
 
     // return N last caseInvestigations
     public List<CaseInvestigation> getCaseInvestigationsN(UUID token,int N){
-        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
+        List<CaseInvestigation> caseInvestigations = ciRepository.findAllByUser(instance.getUserByToken(token));       
 
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
 
@@ -50,7 +57,7 @@ public class CaseInvestigationService{
     
     // return caseInvestigations between startDate and endDate
     public List<CaseInvestigation> getCaseInvestigationsInDate(UUID token, Date startDate, Date endDate){
-        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);
+        List<CaseInvestigation> caseInvestigations = ciRepository.findAllByUser(instance.getUserByToken(token));
 
         List<CaseInvestigation> caseInvestigationsList = new ArrayList<>();
 
@@ -61,24 +68,32 @@ public class CaseInvestigationService{
         return caseInvestigationsList;
     }
 
-    public void deleteCaseInvestigation(UUID token, int ID){
-        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
+    // se elimina solo si el ci corresponde al usuario con el UUID
+    public void deleteCaseInvestigation(UUID token, Long ID){
+        Optional<CaseInvestigation> ci = ciRepository.findById(ID);
 
-        for(int i = 0; i<caseInvestigations.size(); i++){
-            if(caseInvestigations.get(i).getID() == ID){
-                caseInvestigations.remove(i);
-                break;
+        if(ci.isPresent()){
+            if(ci.get().getUser().equals(instance.getUserByToken(token))){
+                ciRepository.deleteById(ID);
             }
         }
+
     }
 
-    public void addFilesToCase(UUID token, List<String> filesURL, int ID){
-        List<CaseInvestigation> caseInvestigations = instance.getCaseInvestigations(token);        
+    public void addFilesToCase(UUID token, List<String> filesURL, Long ID){
+        Optional<CaseInvestigation> ci = ciRepository.findById(ID);
 
-        caseInvestigations.get(ID).setImageList(filesURL);
+        if(ci.isPresent()){
+            ci.get().setImageList(filesURL);
+
+            ciRepository.save(ci.get());
+        }
+
     }
 
-    public CaseInvestigationResult showCaseInvestigationResults(UUID token, int ID){
+    // MOVER AL SERVICIO PROCESAMIENTO DE DATOS Y SOLUCIONAR
+
+    public CaseInvestigation showCaseInvestigationResults(UUID token, Long ID){
         CaseInvestigation ci = null;
         for(CaseInvestigation c : instance.getCaseInvestigations(token)){
             if(c.getID() == ID) ci = c;
@@ -87,6 +102,8 @@ public class CaseInvestigationService{
 
         int Nimages = ci.getImageList().size();
         Map<AnalysisType,List<Float>> results = new HashMap<>();
+
+        ci.setResults(results);
 
         List<AnalysisType> types = new ArrayList<>();
 
@@ -106,7 +123,7 @@ public class CaseInvestigationService{
             results.put(type, getRandomValues(Nimages));
         }
         
-        return new CaseInvestigationResult(ci, results);
+        return new CaseInvestigation(ci);
     }
 
     private List<Float> getRandomValues(int N){

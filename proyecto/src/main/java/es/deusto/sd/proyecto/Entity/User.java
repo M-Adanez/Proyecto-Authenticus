@@ -1,12 +1,24 @@
 package es.deusto.sd.proyecto.Entity;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
+import jakarta.persistence.*;
+import java.util.List;
 
+@Entity
+@Table(name = "Usuarios")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String username;//EMAIL
     private String password;
     private String nombre;
     private String tlf;
+
+    @OneToMany(mappedBy = "user")
+    private List<CaseInvestigation> caseInvestigations;
 
 
     public User(String user,String pass){

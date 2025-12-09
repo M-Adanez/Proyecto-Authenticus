@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
+import es.deusto.sd.proyecto.DAO.userRepository;
 import es.deusto.sd.proyecto.DTO.userDTO;
 import es.deusto.sd.proyecto.Entity.User;
 
@@ -12,9 +13,12 @@ import java.util.UUID;
 @Service
 public class userService {
 
-    private stateManagement instance;
-    public userService() {
-        instance = stateManagement.getInstance();
+    private final userRepository usRepository;
+    private final stateManagement instance;
+
+    public userService(userRepository usRepository) {
+        this.usRepository = usRepository;
+        this.instance = stateManagement.getInstance();
     }
 
     public UUID generateToken(){
@@ -31,15 +35,16 @@ public class userService {
             return "faltan datos"; // Bad Request
         }
         
-        if (instance.getUsers().contains(user)){
+        if (usRepository.findAll().contains(user)){
             return "ya registrado";
         }
-        instance.addUser(user);
+        usRepository.save(user);
         return "creado";
     }
-    
+
+    //Podriamos comprobar que exista el us
     public String loginUser(userDTO userDTO){
-        if (instance.getLoggedUssers().values().contains(new User(userDTO))){
+        if (instance.getLoggedUssers().values().contains(new User(userDTO))){ 
             return "ya logeado"; //YA LOGEADO
         }
 
@@ -47,28 +52,28 @@ public class userService {
         UUID tok=generateToken();
         instance.addLogin(tok,user);
 
-        if (instance.getUsers().contains(user)){
+        if (usRepository.findAll().contains(user)){
             return tok.toString();
         }
 
         ArrayList<String> usernames=new ArrayList<>();
-        for (User us:instance.getUsers()){
+        for (User us:usRepository.findAll()){
             usernames.add(us.getUsername());
         }
         if(usernames.contains(user.getUsername())){
-            return "contraseña mal";
+            return "contraseña mal"; //existe username pero no coincide con password
         }
 
         return "faltan datos";
     }
 
-    public void remove(UUID token){
-        instance.remove(token);
+    public void deleteUser(UUID token){
+        usRepository.delete(instance.getUserByToken(token));
     }
 
     public String logout(String token){
         if (this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
-            instance.delete_token(UUID.fromString(token));
+            instance.logout(UUID.fromString(token));
             return "bien";
         }else{
             return "mal";

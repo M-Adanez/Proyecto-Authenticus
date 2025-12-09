@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import es.deusto.sd.proyecto.Entity.CaseInvestigation;
-import es.deusto.sd.proyecto.Entity.CaseInvestigationResult;
 import es.deusto.sd.proyecto.DTO.CaseInvestigationDTO; // Add this import
 import es.deusto.sd.proyecto.Service.CaseInvestigationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,7 +63,7 @@ public class caseInvestigationController {
     // Get cases by date range
     @Operation(summary = "Show case investigation Results")
     @GetMapping("/{token}/{id}/show")
-    public ResponseEntity<CaseInvestigationResult> showResults(
+    public ResponseEntity<CaseInvestigation> showResults(
         @PathVariable("token") String token,
         @PathVariable("id") int id
         ){

@@ -5,27 +5,43 @@ import es.deusto.sd.proyecto.Entity.AnalysisType;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+
+import jakarta.persistence.*;
+
 // nombre del caso, tipo de análisis (alteración de contenido, veracidad de un contenido o ambos),
 // fecha y lista de archivos de imagen (incluyendo la ruta al archivo).
+@Entity
+@Table(name = "case_investigation")
+public class CaseInvestigation {
 
-public class CaseInvestigation{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    private Long id;
 
-    private static int ID_cont = 0;
-
-    private int ID;
     private String name;
+
+    @Enumerated(EnumType.STRING) 
     private AnalysisType type;
+
     private Date date;
+
+    @ElementCollection 
     private List<String> imageList;
+
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // void constructor
     public CaseInvestigation(){
-        this.ID = ID_cont++;
     }
 
+    // copy constructor
     public CaseInvestigation(CaseInvestigation copy){
+        this.id = copy.getID();
         this.name = copy.getName();
-        this.ID = copy.getID();
         this.date = copy.getDate();
         this.type = copy.getType();
         this.imageList = copy.getImageList();
@@ -37,7 +53,6 @@ public class CaseInvestigation{
         this.type = type;
         this.date = date;
         this.imageList = imageList;
-        this.ID = ID_cont++;
     }
 
     // constructor without imageList 
@@ -46,16 +61,15 @@ public class CaseInvestigation{
         this.date = date;
         this.type = type;
         this.imageList = new ArrayList<>(); 
-        this.ID = ID_cont++;
     }
 
     // getters and setters
-    public int getID() {
-        return this.ID;
+    public long getID() {
+        return this.id;
     }
 
-    public void setID(int id) {
-        this.ID = id;
+    public void setID(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -89,7 +103,14 @@ public class CaseInvestigation{
     public void setImageList(List<String> imageList) {
         this.imageList = imageList;
     }
-    
+
+    public void setUser(User user){
+        this.user = user;
+    }
+
+    public User getUser(){
+        return this.user;
+    }
 
     @Override
     public String toString() {

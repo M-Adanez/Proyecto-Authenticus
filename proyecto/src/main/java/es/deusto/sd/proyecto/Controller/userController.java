@@ -113,7 +113,7 @@ public class userController {
     public ResponseEntity<String> remove(
         @Parameter(description = "User Token", required = true)
         @PathVariable("token") String token){
-            userService.remove(UUID.fromString(token));
+            userService.deleteUser(UUID.fromString(token));
             return ResponseEntity.ok("Removed user's information");
         
     }
