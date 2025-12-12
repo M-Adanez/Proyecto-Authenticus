@@ -22,11 +22,7 @@ public class CaseInvestigationService{
         this.instance = stateManagement.getInstance();
     }
 
-    public void createCaseInvestigation(UUID token, CaseInvestigationDTO ciDTO){
-        CaseInvestigation ci = DTO_to_CI(ciDTO);
-        ci.setUser(instance.getUserByToken(token));
-        ciRepository.save(ci);
-    }
+    //el createCaseInvestigation se hace en gestionBBDD
 
     // return 5 last caseInvestigations
     public List<CaseInvestigation> getCaseInvestigations(UUID token){
@@ -93,38 +89,7 @@ public class CaseInvestigationService{
 
     // MOVER AL SERVICIO PROCESAMIENTO DE DATOS Y SOLUCIONAR
 
-    public CaseInvestigation showCaseInvestigationResults(UUID token, Long ID){
-        CaseInvestigation ci = null;
-        for(CaseInvestigation c : instance.getCaseInvestigations(token)){
-            if(c.getID() == ID) ci = c;
-            break;
-        }
-
-        int Nimages = ci.getImageList().size();
-        Map<AnalysisType,List<Float>> results = new HashMap<>();
-
-        ci.setResults(results);
-
-        List<AnalysisType> types = new ArrayList<>();
-
-        if(ci.getType().equals(AnalysisType.BOTH)){
-            types.add(AnalysisType.CONTENT_ALTERATION);
-            types.add(AnalysisType.CONTENT_VERACITY);
-        }else{
-            types.add(ci.getType());
-            if(ci.getType().equals(AnalysisType.CONTENT_ALTERATION)){
-                results.put(AnalysisType.CONTENT_VERACITY, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
-            }else{
-                results.put(AnalysisType.CONTENT_ALTERATION, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
-            }
-        }
-
-        for(AnalysisType type: types){
-            results.put(type, getRandomValues(Nimages));
-        }
-        
-        return new CaseInvestigation(ci);
-    }
+    //movido el showCaseInvestigationResults a procesamientoDatos
 
     private List<Float> getRandomValues(int N){
         List<Float> values = new ArrayList<>();

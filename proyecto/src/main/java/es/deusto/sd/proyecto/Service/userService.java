@@ -26,21 +26,7 @@ public class userService {
         return uuid;
     }
 
-    public String registerUser(userDTO userDTO){
-        User user= new User(userDTO);
-        if (user.getUsername() == null || user.getUsername().isEmpty() ||
-            user.getPassword() == null || user.getPassword().isEmpty() ||
-            user.getNombre() == null || user.getNombre().isEmpty() ||
-            user.getTlf() == null || user.getTlf().isEmpty()) {
-            return "faltan datos"; // Bad Request
-        }
-        
-        if (usRepository.findAll().contains(user)){
-            return "ya registrado";
-        }
-        usRepository.save(user);
-        return "creado";
-    }
+    //se ha movido el register a gestionBBDD
 
     //Podriamos comprobar que exista el us
     public String loginUser(userDTO userDTO){
@@ -67,9 +53,7 @@ public class userService {
         return "faltan datos";
     }
 
-    public void deleteUser(UUID token){
-        usRepository.delete(instance.getUserByToken(token));
-    }
+    //se ha movido el delete a gestionBBDD
 
     public String logout(String token){
         if (this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
