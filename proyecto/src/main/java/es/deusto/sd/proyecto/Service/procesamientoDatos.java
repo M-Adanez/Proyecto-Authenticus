@@ -18,38 +18,62 @@ public class procesamientoDatos {
      * @param ci El CaseInvestigation a procesar.
      * @return Una nueva instancia de CaseInvestigation con los resultados de la simulación.
      */
-    public CaseInvestigation showCaseInvestigationResults(CaseInvestigation ci){
-        
-        // --- 1. Lógica de Análisis y Preparación de Resultados ---
-        
-        int Nimages = ci.getImageList().size();
-        Map<AnalysisType,List<Float>> results = new HashMap<>();
+    public CaseInvestigation showCaseInvestigationResults(CaseInvestigation ci) {
+    // 1. Inicialización y Preparación
+    Map<AnalysisType, List<Float>> results = new HashMap<>();
+    ci.setResults(results);
 
-        ci.setResults(results);
+    // 2. Delegación de la lógica de análisis
+    switch (ci.getType()) {
+        case BOTH:
+            return processBoth(ci, results);
+        case CONTENT_ALTERATION:
+            return processContentAlteration(ci, results);
+        case CONTENT_VERACITY:
+            return processContentVeracity(ci, results);
+        default:
+            // Manejar un tipo no válido o nulo si fuera necesario
+            return new CaseInvestigation(ci);
+    }
+    }
 
-        List<AnalysisType> types = new ArrayList<>();
+    private CaseInvestigation processBoth(CaseInvestigation ci, Map<AnalysisType, List<Float>> results) {
+    int Nimages = ci.getImageList().size();
+    
+    // Simulación del primer tipo de análisis
+    results.put(AnalysisType.CONTENT_ALTERATION, getRandomValues(Nimages));
+    
+    // Simulación del segundo tipo de análisis
+    results.put(AnalysisType.CONTENT_VERACITY, getRandomValues(Nimages));
+    
+    // Retorna una copia del caso con los resultados generados
+    return new CaseInvestigation(ci);
+    }
 
-        if(ci.getType().equals(AnalysisType.BOTH)){
-            types.add(AnalysisType.CONTENT_ALTERATION);
-            types.add(AnalysisType.CONTENT_VERACITY);
-        } else {
-            types.add(ci.getType());
-            // Inicializa el tipo opuesto con -1f (No aplica)
-            if(ci.getType().equals(AnalysisType.CONTENT_ALTERATION)){
-                results.put(AnalysisType.CONTENT_VERACITY, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
-            } else {
-                results.put(AnalysisType.CONTENT_ALTERATION, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
-            }
-        }
-        
-        // --- 2. Simulación de Resultados ---
+    private CaseInvestigation processContentAlteration(CaseInvestigation ci, Map<AnalysisType, List<Float>> results) {
+    int Nimages = ci.getImageList().size();
+    
+    // 1. Simulación del análisis solicitado
+    results.put(AnalysisType.CONTENT_ALTERATION, getRandomValues(Nimages));
+    
+    // 2. Inicialización del tipo opuesto con -1.0f (No aplica)
+    results.put(AnalysisType.CONTENT_VERACITY, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
+    
+    // Retorna una copia del caso con los resultados generados
+    return new CaseInvestigation(ci);
+    }
 
-        for(AnalysisType type: types){
-            results.put(type, getRandomValues(Nimages));
-        }
-        
-        // Retorna una copia del caso con los resultados generados
-        return new CaseInvestigation(ci);
+    private CaseInvestigation processContentVeracity(CaseInvestigation ci, Map<AnalysisType, List<Float>> results) {
+    int Nimages = ci.getImageList().size();
+    
+    // 1. Simulación del análisis solicitado
+    results.put(AnalysisType.CONTENT_VERACITY, getRandomValues(Nimages));
+    
+    // 2. Inicialización del tipo opuesto con -1.0f (No aplica)
+    results.put(AnalysisType.CONTENT_ALTERATION, new ArrayList<Float>(Collections.nCopies(Nimages, -1f)));
+    
+    // Retorna una copia del caso con los resultados generados
+    return new CaseInvestigation(ci);
     }
     
     /**
