@@ -17,38 +17,40 @@ public class userService {
         instance = stateManagement.getInstance();
     }
 
-    public UUID generateToken(){
+    public UUID generateToken(User user){
         UUID uuid=UUID.randomUUID();
+        instance.addLogin(uuid,user);
         return uuid;
     }
+    
 
-    public String registerUser(userDTO userDTO){
+    public APIResponse registerUser(userDTO userDTO){
         User user= new User(userDTO);
         if (user.getUsername() == null || user.getUsername().isEmpty() ||
             user.getPassword() == null || user.getPassword().isEmpty() ||
             user.getNombre() == null || user.getNombre().isEmpty() ||
             user.getTlf() == null || user.getTlf().isEmpty()) {
-            return "faltan datos"; // Bad Request
+            return APIResponse.FALTAN_DATOS; // Bad Request
         }
         
         if (instance.getUsers().contains(user)){
-            return "ya registrado";
+            return APIResponse.YA_REGISTRADO;
         }
         instance.addUser(user);
-        return "creado";
+        return APIResponse.CREADO;
     }
+
+
     
-    public String loginUser(userDTO userDTO){
+    public APIResponse loginUser(userDTO userDTO){
         if (instance.getLoggedUssers().values().contains(new User(userDTO))){
-            return "ya logeado"; //YA LOGEADO
+            return APIResponse.YA_LOGEADO;
         }
 
         User user=new User(userDTO);
-        UUID tok=generateToken();
-        instance.addLogin(tok,user);
 
         if (instance.getUsers().contains(user)){
-            return tok.toString();
+            return APIResponse.BIEN;
         }
 
         ArrayList<String> usernames=new ArrayList<>();
@@ -56,28 +58,28 @@ public class userService {
             usernames.add(us.getUsername());
         }
         if(usernames.contains(user.getUsername())){
-            return "contraseña mal";
+            return APIResponse.CONTRASEÑA_MAL;
         }
 
-        return "faltan datos";
+        return APIResponse.FALTAN_DATOS;
     }
 
-    public String logout(String token){
+    public APIResponse logout(String token){
         if (this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
             instance.delete_token(UUID.fromString(token));
-            return "bien";
+            return APIResponse.BIEN;
         }else{
-            return "mal";
+            return APIResponse.MAL;
         }
     }
 
-    public String remove(String token){
+    public APIResponse remove(String token){
         if(this.instance.getLoggedUssers().containsKey(UUID.fromString(token))){
             instance.delete_user(UUID.fromString(token));
             logout(token);
-            return "bien";
+            return APIResponse.BIEN;
         }else{
-            return "no existe";
+            return APIResponse.NO_EXISTE;
         }
     }
 }

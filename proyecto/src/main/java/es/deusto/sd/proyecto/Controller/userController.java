@@ -1,6 +1,5 @@
 package es.deusto.sd.proyecto.Controller;
 
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
+import es.deusto.sd.proyecto.Entity.User;
+import es.deusto.sd.proyecto.Service.APIResponse;
 import es.deusto.sd.proyecto.Service.userService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,23 +52,29 @@ public class userController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Bad Request
         }
 
-        String reg=userService.loginUser(userDTO);
-        switch (reg) {
-            case "faltan datos":
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); //400 faltan datos
-            case "contraseña mal":
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401 contraseña mal
-            
-            case "no existe":
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404 no existe
+        APIResponse resp=userService.loginUser(userDTO);
 
-            case "ya logeado":
-                return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya logeado                
+
+        switch (resp) {
+            case APIResponse.FALTAN_DATOS:
+                return new ResponseEntity<>(resp.getStatus()); //400 faltan datos
+            case APIResponse.CONTRASEÑA_MAL:
+                return new ResponseEntity<>(resp.getStatus());//401 contraseña mal
+            
+            case APIResponse.NO_EXISTE:
+                return new ResponseEntity<>(resp.getStatus());//404 no existe
+
+            case APIResponse.YA_LOGEADO:
+                return new ResponseEntity<>(resp.getStatus());//409 ya logeado                
+
+            case APIResponse.BIEN:
+                return new ResponseEntity<>(userService.generateToken(new User(userDTO)).toString(),resp.getStatus());//409 ya logeado                
 
             default:
-                return new ResponseEntity<>(reg,HttpStatus.OK);//200 bien
+                break;
 
         }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     //REGISTER
@@ -84,16 +91,18 @@ public class userController {
     @PostMapping("/register")
     public ResponseEntity<String> register(
         @RequestBody userDTO userDTO) {//TODS LOS CAMPOS SON NULL ENTONCES DA ERROR PERO SOLO AL USAR EL BODY, NO PARAMS
-        String reg=userService.registerUser(userDTO);
+        APIResponse reg=userService.registerUser(userDTO);
+
+        reg=(APIResponse)reg;
         switch (reg) {
-            case "faltan datos":
+            case APIResponse.FALTAN_DATOS:
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400 falta informacion
             
-            case "ya registrado":
+            case APIResponse.YA_REGISTRADO:
                 return new ResponseEntity<>(HttpStatus.CONFLICT);//409 ya esta registrado
-
-            case "creado":
-                return new ResponseEntity<>(HttpStatus.CREATED);//200 bien
+            
+            case APIResponse.CREADO:
+                return new ResponseEntity<>(HttpStatus.CREATED);// 201 CREATED
         
             default:
                 break;
@@ -114,13 +123,13 @@ public class userController {
     public ResponseEntity<String> logout(
         @Parameter(description = "User Token", required = true)
         @PathVariable("token") String token){
-        String la=userService.logout(token);
+        APIResponse la=userService.logout(token);
         
         switch (la) {
-            case "bien":
+            case APIResponse.BIEN:
                 return new ResponseEntity<>(HttpStatus.OK); //200
 
-            case "mal":
+            case APIResponse.MAL:
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//400
 
             default:
@@ -141,13 +150,13 @@ public class userController {
     public ResponseEntity<String> remove(
         @Parameter(description = "User Token", required = true)
         @PathVariable("token") String token){
-        String la=userService.remove(token);
+        APIResponse la=userService.remove(token);
         
         switch (la) {
-            case "bien":
+            case APIResponse.BIEN:
                 return new ResponseEntity<>(HttpStatus.OK); //200
 
-            case "no existe":
+            case APIResponse.NO_EXISTE:
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);//404
 
             default:
