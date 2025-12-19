@@ -4,6 +4,7 @@ import es.deusto.sd.proyecto.Entity.AnalysisType;
 
 import java.util.Date;
 import java.util.List;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import jakarta.persistence.*;
 // fecha y lista de archivos de imagen (incluyendo la ruta al archivo).
 @Entity
 @Table(name = "case_investigation")
-public class CaseInvestigation {
+public class CaseInvestigation implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 

@@ -9,6 +9,9 @@ import es.deusto.sd.proyecto.Entity.AnalysisType;
 import org.aspectj.internal.lang.annotation.ajcDeclareSoft;
 import org.springframework.stereotype.Service;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.*;
 
 @Service
@@ -111,4 +114,36 @@ public class CaseInvestigationService{
         CaseInvestigationDTO dto = new CaseInvestigationDTO(ci.getName(), ci.getType(), ci.getDate(), ci.getImageList());
         return dto;
     } 
+
+
+    public CaseInvestigation procesarCasoRemotamente(CaseInvestigation ci) {
+        String host = "localhost";
+        int puerto = 5000;
+
+        try (Socket socket = new Socket(host, puerto);
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+
+            // Enviar el objeto al servidor de procesamiento
+            out.writeObject(ci);
+            out.flush();
+
+            // Recibir el objeto ya procesado con los resultados
+            return (CaseInvestigation) in.readObject();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // O manejar el error adecuadamente
+        }
+    }
+
+    public void ejecutarYGuardarAnalisis(CaseInvestigation ci) {
+        // 1. Llamamos al socket
+        CaseInvestigation procesado = procesarCasoRemotamente(ci);
+        
+        // 2. Si todo fue bien, guardamos en la BD
+        if (procesado != null) {
+            ciRepository.save(procesado);
+     }
+    }
 }

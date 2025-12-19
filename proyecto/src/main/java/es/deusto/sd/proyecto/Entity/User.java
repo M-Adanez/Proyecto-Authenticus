@@ -2,11 +2,13 @@ package es.deusto.sd.proyecto.Entity;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "Usuarios")
-public class User {
+public class User implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
