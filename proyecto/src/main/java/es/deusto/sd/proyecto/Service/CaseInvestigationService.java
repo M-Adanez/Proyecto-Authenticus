@@ -1,6 +1,8 @@
 package es.deusto.sd.proyecto.Service;
 
 import es.deusto.sd.proyecto.Entity.CaseInvestigation;
+import es.deusto.sd.proyecto.Gateway.AnalysisGateway;
+import es.deusto.sd.proyecto.Gateway.DatabaseGateway;
 import es.deusto.sd.proyecto.DAO.caseInvestigationRepository;
 import es.deusto.sd.proyecto.DTO.CaseInvestigationDTO;
 
@@ -19,10 +21,14 @@ public class CaseInvestigationService{
 
     private final caseInvestigationRepository ciRepository;
     private final stateManagement instance;
+    private final AnalysisGateway analysisGateway; // <--- Nueva dependencia
+    private final DatabaseGateway databaseGateway; // El nuevo de HTTP
 
-    public CaseInvestigationService(caseInvestigationRepository ciRepository) {
+    public CaseInvestigationService(caseInvestigationRepository ciRepository, AnalysisGateway analysisGateway, DatabaseGateway databaseGateway, stateManagement stateManagement) {
         this.ciRepository = ciRepository;
-        this.instance = stateManagement.getInstance();
+        this.instance = es.deusto.sd.proyecto.Service.stateManagement.getInstance();
+        this.analysisGateway = analysisGateway;
+        this.databaseGateway = databaseGateway;
     }
 
     //el createCaseInvestigation se hace en gestionBBDD
@@ -117,33 +123,16 @@ public class CaseInvestigationService{
 
 
     public CaseInvestigation procesarCasoRemotamente(CaseInvestigation ci) {
-        String host = "localhost";
-        int puerto = 5000;
-
-        try (Socket socket = new Socket(host, puerto);
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
-
-            // Enviar el objeto al servidor de procesamiento
-            out.writeObject(ci);
-            out.flush();
-
-            // Recibir el objeto ya procesado con los resultados
-            return (CaseInvestigation) in.readObject();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null; // O manejar el error adecuadamente
-        }
+        return analysisGateway.sendToRemoteProcessing(ci);
     }
 
     public void ejecutarYGuardarAnalisis(CaseInvestigation ci) {
-        // 1. Llamamos al socket
-        CaseInvestigation procesado = procesarCasoRemotamente(ci);
+        // 1. Procesamiento remoto vía SOCKET
+        CaseInvestigation procesado = analysisGateway.sendToRemoteProcessing(ci);
         
-        // 2. Si todo fue bien, guardamos en la BD
+        // 2. Guardado remoto vía HTTP
         if (procesado != null) {
-            ciRepository.save(procesado);
-     }
+            databaseGateway.saveCaseRemotely(procesado);
+        }
     }
 }
