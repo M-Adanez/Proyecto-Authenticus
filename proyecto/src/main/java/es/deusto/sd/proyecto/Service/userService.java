@@ -50,7 +50,8 @@ public class userService {
         User user=new User(userDTO);
 
         if (instance.getUsers().contains(user)){
-            return APIResponse.BIEN;
+            APIResponse.TOKEN.setMensaje(generateToken(user).toString());
+            return APIResponse.TOKEN;
         }
 
         ArrayList<String> usernames=new ArrayList<>();

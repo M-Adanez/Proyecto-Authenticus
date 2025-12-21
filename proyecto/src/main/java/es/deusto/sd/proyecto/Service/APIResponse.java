@@ -10,10 +10,11 @@ public enum APIResponse {
     CONTRASEÑA_MAL(HttpStatus.UNAUTHORIZED,"Contraseña Erronea"),
     NO_EXISTE(HttpStatus.NOT_FOUND,"No Existe"),
     BIEN(HttpStatus.OK,"Correcto"),
-    MAL(HttpStatus.BAD_REQUEST,"Solicitud Erronea");
+    MAL(HttpStatus.BAD_REQUEST,"Solicitud Erronea"),
+    TOKEN(HttpStatus.OK,"");
 
     private final HttpStatus status;
-    private final String mensaje;
+    private String mensaje;
 
 
     APIResponse(HttpStatus stat,String mens){
@@ -27,5 +28,9 @@ public enum APIResponse {
 
     public String getMensaje(){
         return this.mensaje;
+    }
+
+    public void setMensaje(String mens){
+        this.mensaje=mens;
     }
 }

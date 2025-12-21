@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.deusto.sd.proyecto.DTO.userDTO;
-import es.deusto.sd.proyecto.Entity.User;
 import es.deusto.sd.proyecto.Service.APIResponse;
 import es.deusto.sd.proyecto.Service.userService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,8 +66,8 @@ public class userController {
             case APIResponse.YA_LOGEADO:
                 return new ResponseEntity<>(resp.getStatus());//409 ya logeado                
 
-            case APIResponse.BIEN:
-                return new ResponseEntity<>(userService.generateToken(new User(userDTO)).toString(),resp.getStatus());//409 ya logeado                
+            case APIResponse.TOKEN:
+                return new ResponseEntity<>(resp.getMensaje(), resp.getStatus());//200 ok                
 
             default:
                 break;
